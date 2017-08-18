@@ -127,6 +127,7 @@ public abstract class AbstractGradleExecuter implements GradleExecuter {
     private boolean requiresGradleDistribution;
     private boolean useOwnUserHomeServices;
     private boolean useRichConsole;
+    private boolean showStacktrace = true;
 
     private int expectedDeprecationWarnings;
     private boolean eagerClassLoaderCreationChecksOn = true;
@@ -353,6 +354,9 @@ public abstract class AbstractGradleExecuter implements GradleExecuter {
             executer.withRichConsole();
         }
 
+        if (!showStacktrace) {
+            executer.withStacktraceDisabled();
+        }
         return executer;
     }
 
@@ -708,6 +712,11 @@ public abstract class AbstractGradleExecuter implements GradleExecuter {
         return this;
     }
 
+    public GradleExecuter withStacktraceDisabled() {
+        showStacktrace = false;
+        return this;
+    }
+
     /**
      * Performs cleanup at completion of the test.
      */
@@ -791,7 +800,9 @@ public abstract class AbstractGradleExecuter implements GradleExecuter {
                 allArgs.add("--no-daemon");
             }
         }
-        allArgs.add("--stacktrace");
+        if (showStacktrace) {
+            allArgs.add("--stacktrace");
+        }
         if (taskList) {
             allArgs.add("tasks");
         }
